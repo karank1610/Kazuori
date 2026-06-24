@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-background: #080808;
+  --color-primary: #F0EDE6;
+  --color-accent: #C8A97E;
+  --color-secondary: #4A5568;
+  --color-cream: #E8D5B7;
+
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-japanese: "Noto Serif JP", serif;
+}
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #080808;
+  color: #F0EDE6;
+  font-family: "Inter", sans-serif;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8A97E;
+}
