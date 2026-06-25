@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
@@ -9,18 +9,17 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
 ]
 
+const navColorWash = [
+  'radial-gradient(circle at 8% 50%, rgba(200,169,126,0.22), transparent 28%), radial-gradient(circle at 92% 50%, rgba(77,122,150,0.20), transparent 28%), linear-gradient(90deg, rgba(8,8,8,0.88), rgba(14,18,18,0.78), rgba(8,8,8,0.88))',
+  'radial-gradient(circle at 24% 45%, rgba(176,88,72,0.18), transparent 30%), radial-gradient(circle at 78% 52%, rgba(200,169,126,0.24), transparent 30%), linear-gradient(90deg, rgba(8,8,8,0.9), rgba(13,17,18,0.78), rgba(8,8,8,0.9))',
+  'radial-gradient(circle at 12% 52%, rgba(77,122,150,0.18), transparent 28%), radial-gradient(circle at 88% 44%, rgba(200,169,126,0.22), transparent 30%), linear-gradient(90deg, rgba(8,8,8,0.88), rgba(16,14,13,0.8), rgba(8,8,8,0.88))',
+]
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
-  const [scrollY, setScrollY] = useState(0)
   const [initialLoad, setInitialLoad] = useState(true)
-  const location = useLocation()
   const lastScrollY = useRef(0)
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsOpen(false)
-  }, [location.pathname])
 
   // Scroll hide/show logic
   useEffect(() => {
@@ -34,7 +33,6 @@ const Navbar = () => {
         setIsVisible(true)
       }
       lastScrollY.current = currentScrollY
-      setScrollY(currentScrollY)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -58,6 +56,18 @@ const Navbar = () => {
       document.body.style.overflow = ''
     }
   }, [isOpen])
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia('(min-width: 768px)')
+    const handleBreakpointChange = (event) => {
+      if (event.matches) {
+        setIsOpen(false)
+      }
+    }
+
+    desktopQuery.addEventListener('change', handleBreakpointChange)
+    return () => desktopQuery.removeEventListener('change', handleBreakpointChange)
+  }, [])
 
   const navbarVariants = {
     hidden: { y: -100, opacity: 0 },
@@ -131,38 +141,59 @@ const Navbar = () => {
         animate={isVisible ? 'visible' : 'exit'}
         className='fixed top-0 left-0 w-full z-50'
       >
-        <div className='relative'>
+        <div className='relative overflow-hidden'>
           {/* Frosted glass background */}
-          <div className='absolute inset-0 bg-[#080808]/70 backdrop-blur-md' />
+          <motion.div
+            className='absolute inset-0 backdrop-blur-md'
+            animate={{ background: navColorWash }}
+            transition={{ duration: 14, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
+          />
+
+          <motion.div
+            className='absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/10 to-transparent'
+            initial={{ x: '-45%', opacity: 0 }}
+            animate={{ x: '245%', opacity: [0, 0.28, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+          />
 
           {/* Bottom border */}
-          <div className='absolute bottom-0 left-0 right-0 h-[1px] bg-[#C8A97E]/20' />
+          <div className='absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#C8A97E]/45 to-transparent' />
 
-          <div className='relative flex items-center justify-between px-6 md:px-12 h-16 md:h-20'>
+          <div
+            className='relative flex h-14 w-full items-center justify-between md:h-[72px]'
+            style={{ paddingInline: 'clamp(24px, 5vw, 112px)' }}
+          >
             {/* Logo */}
-            <Link to='/' className='flex flex-col items-start leading-none select-none'>
-              <span
-                className='text-[28px] md:text-[34px] tracking-[0.15em] text-primary leading-none'
+            <Link
+              to='/'
+              className='group flex min-w-0 flex-col items-start justify-center leading-none select-none'
+              aria-label='Kazuori home'
+              onClick={() => setIsOpen(false)}
+            >
+              <motion.span
+                className='text-[26px] tracking-[0.14em] text-primary leading-none drop-shadow-[0_0_18px_rgba(200,169,126,0.22)] sm:text-[28px] md:text-[34px] md:tracking-[0.15em]'
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
+                whileHover={{ rotateX: 8, rotateY: -10, z: 12 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
               >
                 KAZUORI
-              </span>
+              </motion.span>
               <span
-                className='text-[10px] md:text-[11px] text-[#C8A97E] tracking-[0.05em] leading-none mt-[2px]'
+                className='mt-0.5 text-[9px] leading-none tracking-[0.08em] text-[#C8A97E] sm:text-[10px] md:text-[11px]'
                 style={{ fontFamily: "'Noto Serif JP', serif" }}
               >
-                影を動かす者
+                &#24433;&#12434;&#21205;&#12363;&#12377;&#32773;
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className='hidden md:flex items-center gap-8'>
+            <div className='hidden items-center gap-6 md:flex xl:gap-8'>
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
                   className={({ isActive }) =>
-                    `relative text-xs uppercase tracking-[0.2em] transition-colors duration-300 ${
+                    `relative flex h-10 items-center text-xs uppercase tracking-[0.2em] transition-colors duration-300 ${
                       isActive
                         ? 'text-[#C8A97E]'
                         : 'text-white/60 hover:text-white/90'
@@ -179,7 +210,7 @@ const Navbar = () => {
                       {isActive && (
                         <motion.span
                           layoutId='activeNavIndicator'
-                          className='absolute -bottom-1 left-0 right-0 h-[2px] bg-[#C8A97E]'
+                          className='absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C8A97E] via-[#F0EDE6] to-[#4D7A96] shadow-[0_0_16px_rgba(200,169,126,0.55)]'
                           transition={{ duration: 0.3, ease: 'easeOut' }}
                         />
                       )}
@@ -187,24 +218,14 @@ const Navbar = () => {
                   )}
                 </NavLink>
               ))}
-
-              {/* Music toggle placeholder */}
-              <button
-                className='flex flex-col items-center gap-[5px] px-2 py-2 opacity-60 hover:opacity-100 transition-opacity duration-300'
-                aria-label='Toggle audio'
-                title='Audio (coming soon)'
-              >
-                <span className='block h-[2px] bg-primary w-6 rounded-full' />
-                <span className='block h-[2px] bg-primary w-[18px] rounded-full' />
-                <span className='block h-[2px] bg-primary w-[14px] rounded-full' />
-              </button>
             </div>
 
             {/* Mobile Hamburger */}
             <button
-              className='md:hidden flex flex-col items-end gap-[5px] p-2 z-50'
+              className='z-50 flex h-10 w-10 flex-col items-end justify-center gap-[5px] md:hidden'
               onClick={() => setIsOpen(!isOpen)}
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isOpen}
             >
               <motion.span
                 variants={lineTopVariants}
@@ -235,9 +256,9 @@ const Navbar = () => {
             initial='hidden'
             animate='visible'
             exit='exit'
-            className='fixed inset-0 z-40 md:hidden bg-[#080808]/95 backdrop-blur-xl flex flex-col items-center justify-center'
+            className='fixed inset-0 z-40 flex flex-col items-center justify-center bg-[#080808]/95 px-6 py-20 backdrop-blur-xl md:hidden'
           >
-            <nav className='flex flex-col items-center gap-10'>
+            <nav className='flex w-full max-w-sm flex-col items-center gap-7 sm:gap-9'>
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.path}
@@ -251,7 +272,7 @@ const Navbar = () => {
                     to={link.path}
                     onClick={() => setIsOpen(false)}
                     className={({ isActive }) =>
-                      `text-5xl tracking-[0.15em] transition-colors duration-300 ${
+                      `block text-center text-[clamp(2.75rem,14vw,4.5rem)] leading-none tracking-[0.12em] transition-colors duration-300 ${
                         isActive ? 'text-[#C8A97E]' : 'text-white/80 hover:text-white'
                       }`
                     }
