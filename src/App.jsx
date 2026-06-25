@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import Navbar from './components/layout/Navbar'
 import Home from './pages/Home'
 import Work from './pages/Work'
 import WorkDetail from './pages/WorkDetail'
@@ -27,6 +28,7 @@ const AnimatedRoutes = () => {
 const App = () => {
   return (
     <BrowserRouter>
+      <Navbar />
       <AnimatedRoutes />
     </BrowserRouter>
   )
