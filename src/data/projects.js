@@ -12,7 +12,7 @@ export const projects = [
   {
     id: 2,
     slug: 'okami-no-chi',
-    title: 'Ōkami no Chi',
+    title: 'Okami no Chi',
     year: 2022,
     type: 'Original Series',
     episodes: 8,

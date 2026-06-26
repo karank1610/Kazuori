@@ -98,9 +98,9 @@ const Hero = () => {
       context.globalAlpha = opacity
 
       const gradient = context.createRadialGradient(0, 0, 0, 0, 0, petal.size)
-      gradient.addColorStop(0, 'rgba(255, 245, 248, 0.98)')
-      gradient.addColorStop(0.55, 'rgba(248, 202, 214, 0.78)')
-      gradient.addColorStop(1, 'rgba(248, 202, 214, 0)')
+      gradient.addColorStop(0, 'rgba(235, 165, 80, 0.95)')
+      gradient.addColorStop(0.55, 'rgba(210, 130, 50, 0.75)')
+      gradient.addColorStop(1, 'rgba(210, 130, 50, 0)')
 
       context.fillStyle = gradient
       context.beginPath()
@@ -146,11 +146,11 @@ const Hero = () => {
 
   return (
     <section
-      className='group relative flex h-screen overflow-hidden bg-[#080808] text-[#F0EDE6]'
+      className='group relative flex h-screen w-full overflow-hidden bg-[#080808] text-[#F0EDE6]'
       onPointerMove={handlePointerMove}
     >
       <motion.div
-        className='absolute inset-[-3%] z-0'
+        className='absolute inset-0 z-0 overflow-hidden'
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.35, ease: [0.16, 1, 0.3, 1] }}
@@ -180,7 +180,7 @@ const Hero = () => {
       <div className='absolute inset-x-0 top-0 z-20 h-36 bg-gradient-to-b from-[#080808] to-transparent' />
       <div className='absolute inset-x-0 bottom-0 z-20 h-44 bg-gradient-to-t from-[#080808] to-transparent' />
 
-      <div className='relative z-30 flex w-full flex-col items-center justify-center px-5 text-center'>
+      <div className='relative z-30 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8 text-center'>
         <h1
           className='flex max-w-full justify-center overflow-hidden text-[3.45rem] leading-[0.8] tracking-[0.12em] text-[#F0EDE6] mix-blend-screen drop-shadow-[0_0_34px_rgba(240,237,230,0.18)] sm:text-[6.5rem] sm:tracking-[0.16em] md:text-[9rem] lg:text-[12rem] xl:text-[15rem]'
           style={{ fontFamily: "'Bebas Neue', sans-serif" }}
