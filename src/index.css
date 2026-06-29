@@ -12,11 +12,7 @@
   --font-display: "Bebas Neue", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-japanese: "Noto Serif JP", serif;
-
-  --spacing-10: 2.5rem;
-  --spacing-14: 3.5rem;
 }
-
 
 * {
   margin: 0;
@@ -52,19 +48,4 @@ main {
 
 ::-webkit-scrollbar-thumb {
   background: #C8A97E;
-}
-
-/* Custom padding utilities for responsive layout */
-@media (min-width: 768px) {
-  .md\:px-10 {
-    padding-left: 2.5rem !important;
-    padding-right: 2.5rem !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:px-14 {
-    padding-left: 3.5rem !important;
-    padding-right: 3.5rem !important;
-  }
 }

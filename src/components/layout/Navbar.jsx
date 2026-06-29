@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const navLinks = [
@@ -19,17 +19,36 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [initialLoad, setInitialLoad] = useState(true)
+  const [hoveredPath, setHoveredPath] = useState(null)
   const lastScrollY = useRef(0)
+  const location = useLocation()
+  const navRefs = useRef({})
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 })
+
+  // Update indicator position when route changes or on mount
+  useEffect(() => {
+    const activeLink = navLinks.find(link => link.path === location.pathname)
+    if (activeLink && navRefs.current[activeLink.path]) {
+      const el = navRefs.current[activeLink.path]
+      const rect = el.getBoundingClientRect()
+      const parentRect = el.parentElement.getBoundingClientRect()
+      setIndicatorStyle({
+        left: rect.left - parentRect.left,
+        width: rect.width,
+        opacity: 1,
+      })
+    } else {
+      setIndicatorStyle(prev => ({ ...prev, opacity: 0 }))
+    }
+  }, [location.pathname])
 
   // Scroll hide/show logic
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
       if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
-        // Scrolling down - hide navbar
         setIsVisible(false)
       } else {
-        // Scrolling up - show navbar
         setIsVisible(true)
       }
       lastScrollY.current = currentScrollY
@@ -68,6 +87,37 @@ const Navbar = () => {
     desktopQuery.addEventListener('change', handleBreakpointChange)
     return () => desktopQuery.removeEventListener('change', handleBreakpointChange)
   }, [])
+
+  const handleMouseEnter = (path) => {
+    setHoveredPath(path)
+    if (navRefs.current[path]) {
+      const el = navRefs.current[path]
+      const rect = el.getBoundingClientRect()
+      const parentRect = el.parentElement.getBoundingClientRect()
+      setIndicatorStyle({
+        left: rect.left - parentRect.left,
+        width: rect.width,
+        opacity: 1,
+      })
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setHoveredPath(null)
+    const activeLink = navLinks.find(link => link.path === location.pathname)
+    if (activeLink && navRefs.current[activeLink.path]) {
+      const el = navRefs.current[activeLink.path]
+      const rect = el.getBoundingClientRect()
+      const parentRect = el.parentElement.getBoundingClientRect()
+      setIndicatorStyle({
+        left: rect.left - parentRect.left,
+        width: rect.width,
+        opacity: 1,
+      })
+    } else {
+      setIndicatorStyle(prev => ({ ...prev, opacity: 0 }))
+    }
+  }
 
   const navbarVariants = {
     hidden: { y: -100, opacity: 0 },
@@ -187,11 +237,27 @@ const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className='hidden items-center gap-6 md:flex xl:gap-8'>
+            <div 
+              className='hidden items-center gap-6 md:flex xl:gap-8 relative'
+              onMouseLeave={handleMouseLeave}
+            >
+              {/* Active/Hover indicator - positioned absolutely within the nav container */}
+              <motion.div
+                className='absolute -bottom-1 h-[2px] bg-gradient-to-r from-[#C8A97E] via-[#F0EDE6] to-[#4D7A96] shadow-[0_0_16px_rgba(200,169,126,0.55)] pointer-events-none'
+                animate={{
+                  left: indicatorStyle.left,
+                  width: indicatorStyle.width,
+                  opacity: indicatorStyle.opacity,
+                }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              />
+
               {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
                   to={link.path}
+                  ref={(el) => { navRefs.current[link.path] = el }}
+                  onMouseEnter={() => handleMouseEnter(link.path)}
                   className={({ isActive }) =>
                     `relative flex h-10 items-center text-xs uppercase tracking-[0.2em] transition-colors duration-300 ${
                       isActive
@@ -207,13 +273,6 @@ const Navbar = () => {
                       className='inline-block'
                     >
                       {link.name}
-                      {isActive && (
-                        <motion.span
-                          layoutId='activeNavIndicator'
-                          className='absolute -bottom-1 left-0 right-0 h-[2px] bg-gradient-to-r from-[#C8A97E] via-[#F0EDE6] to-[#4D7A96] shadow-[0_0_16px_rgba(200,169,126,0.55)]'
-                          transition={{ duration: 0.3, ease: 'easeOut' }}
-                        />
-                      )}
                     </motion.span>
                   )}
                 </NavLink>
